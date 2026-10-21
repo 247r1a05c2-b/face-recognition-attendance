@@ -67,11 +67,14 @@ Required Libraries
 
 Run in Anaconda Prompt:
 
-pip install opencv-python
-pip install opencv-contrib-python
-pip install numpy
-pip install pillow
-pip install mysql-connector-python
+Install the project dependencies from the repository root:
+
+```bash
+pip install -r requirements.txt
+```
+
+Use `opencv-contrib-python` (not both OpenCV packages): this application calls
+`cv2.face.LBPHFaceRecognizer_create()`, which is provided by the contrib build.
 Database Setup
 
 Open PHPMyAdmin:
