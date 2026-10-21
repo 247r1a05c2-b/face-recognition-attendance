@@ -10,11 +10,14 @@ from tkinter import messagebox
 # DATABASE CONNECTION
 # =====================================================
 
+# Configure these through environment variables for non-local deployments.
+# Empty DB_PASSWORD preserves the original local XAMPP setup; set a real password
+# for any shared machine and never commit credentials to this repository.
 db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="face_attendance"
+    host=os.getenv("DB_HOST", "localhost"),
+    user=os.getenv("DB_USER", "root"),
+    password=os.getenv("DB_PASSWORD", ""),
+    database=os.getenv("DB_NAME", "face_attendance"),
 )
 
 cursor = db.cursor()
@@ -315,32 +318,28 @@ def mark_attendance():
                     )
 
                     if id not in marked_ids:
-
-                        sql = """
-                        INSERT INTO attendance
-                        (name, rollno, status, date, time)
-                        VALUES(%s,%s,%s,CURDATE(),CURTIME())
-                        """
-
-                        val = (
-                            name,
-                            rollno,
-                            "Present"
-                        )
-
+                        # Prevent repeat attendance for the same roll number on
+                        # the same day, including across separate app sessions.
                         cursor.execute(
-                            sql,
-                            val
+                            "SELECT 1 FROM attendance WHERE rollno=%s AND date=CURDATE() LIMIT 1",
+                            (rollno,),
                         )
+                        already_marked_today = cursor.fetchone() is not None
 
-                        db.commit()
+                        if not already_marked_today:
+                            sql = """
+                            INSERT INTO attendance
+                            (name, rollno, status, date, time)
+                            VALUES(%s,%s,%s,CURDATE(),CURTIME())
+                            """
+                            val = (name, rollno, "Present")
+                            cursor.execute(sql, val)
+                            db.commit()
+                            print(name, "Marked Present")
+                        else:
+                            print(name, "Attendance already marked today")
 
                         marked_ids.append(id)
-
-                        print(
-                            name,
-                            "Marked Present"
-                        )
 
             else:
 
