@@ -83,7 +83,7 @@ Create database:
 CREATE DATABASE face_attendance;
 
 No need to create tables manually.
-The program creates tables automatically.
+The program creates tables automatically. Configure `DB_HOST`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` as environment variables if your local MySQL settings differ. The defaults preserve the original local XAMPP setup; do not use an empty database password on a shared or production machine.
 
 How to Run
 
@@ -150,3 +150,11 @@ Deep Learning Face Recognition
 Multiple User Authentication
 Author
 247r1a05c2-b
+
+
+## Privacy and limitations
+
+- Obtain informed consent before collecting or processing anyone's face images, and provide a clear way to remove their stored samples and attendance records.
+- Face recognition can misidentify people. Keep a human verification process and provide a manual attendance alternative; do not use this prototype for high-stakes decisions.
+- Dataset images and trained model files are biometric data. Keep them out of public commits and restrict access to the machine and database.
+- Attendance is checked by roll number and date to avoid duplicate records from repeated sessions. Test the database behavior before real use.
